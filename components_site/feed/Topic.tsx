@@ -3,7 +3,7 @@ import {
   Collapse,
   IconButton,
   Input,
-  InputAdornment
+  InputAdornment,
 } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
@@ -63,7 +63,9 @@ export default function Topic({ topicData }) {
         "total"
       )
     ).then((snap) => {
-      if (snap.exists()) setLikes(snap.data().count || 0);
+      if (snap.exists()) setLikes(snap.data().count);
+      else setLikes(0);
+      console.log(snap.data());
     });
   }, []);
 
@@ -78,7 +80,8 @@ export default function Topic({ topicData }) {
         "total"
       )
     ).then((snap) => {
-      if (snap.exists()) setDeslikes(snap.data().count || 0);
+      if (snap.exists()) setDeslikes(snap.data().count);
+      else setDeslikes(0);
     });
   }, []);
 
@@ -126,28 +129,38 @@ export default function Topic({ topicData }) {
     });
   }, [liked]);
 
-  const handleLikeTopic = async (evt) => {
-    evt.preventDefault();
+  const toggleLikeTopic = async () => {
     if (liked) {
       // remove like
       setdisable(true);
-      await deleteDoc(
+      deleteDoc(
+        doc(
+          collection(
+            doc(collection(firebase_helper.db, "topics"), topicData.id),
+            "likes"
+          ),
+          user.displayName
+        )
+      ).then(async () => {
+        await setDoc(
           doc(
             collection(
               doc(collection(firebase_helper.db, "topics"), topicData.id),
               "likes"
             ),
-            user.displayName
-          )
-        ).then(()=>{
-          setLikes(likes - 1);
-          setLiked(false);
-          setdisable(false)
-        });
+            "total"
+          ),
+          { count: likes - 1 }
+        );
+
+        setLikes(likes - 1);
+        setLiked(false);
+        setdisable(false);
+      });
     } else {
-      //add like
+      // add like
       setdisable(true);
-      await setDoc(
+      setDoc(
         doc(
           collection(
             doc(collection(firebase_helper.db, "topics"), topicData.id),
@@ -159,12 +172,83 @@ export default function Topic({ topicData }) {
           displayName: user.displayName,
           photoURL: user.photoURL,
         }
-      ).then(()=>{
+      ).then(async () => {
+        await setDoc(
+          doc(
+            collection(
+              doc(collection(firebase_helper.db, "topics"), topicData.id),
+              "likes"
+            ),
+            "total"
+          ),
+          { count: likes + 1 }
+        );
         setdisable(false);
         setLiked(true);
         setLikes(likes + 1);
       });
     }
+  };
+
+  const toggleDeslikeTopic = async () => {
+    if (desliked) {
+      // remove deslike
+      setdisable(true);
+      deleteDoc(
+        doc(
+          collection(
+            doc(collection(firebase_helper.db, "topics"), topicData.id),
+            "deslikes"
+          ),
+          user.displayName
+        )
+      ).then(async () => {
+        await setDoc(
+          doc(
+            collection(
+              doc(collection(firebase_helper.db, "topics"), topicData.id),
+              "deslikes"
+            ),
+            "total"
+          ),
+          { count: 0 }
+        );
+        setDeslikes(0);
+        setDisliked(false);
+        setdisable(false);
+      });
+    } else {
+      // add deslike
+      setdisable(true);
+      setDoc(
+        doc(
+          collection(
+            doc(collection(firebase_helper.db, "topics"), topicData.id),
+            "deslikes"
+          ),
+          user.displayName
+        ),
+        {
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+        }
+      ).then(async () => {
+        await setDoc(
+          doc(
+            collection(
+              doc(collection(firebase_helper.db, "topics"), topicData.id),
+              "deslikes"
+            ),
+            "total"
+          ),
+          { count: deslikes + 1 }
+        );
+        setdisable(false);
+        setDisliked(true);
+        setDeslikes(deslikes + 1);
+      });
+    }
+  };
 
   return (
     <Card className={classes.root}>
@@ -198,7 +282,11 @@ export default function Topic({ topicData }) {
           }}
           badgeContent={likes.toString()}
         >
-          <IconButton aria-label="like" disabled={disable}>
+          <IconButton
+            aria-label="like"
+            disabled={disable}
+            onClick={toggleLikeTopic}
+          >
             <ThumbUpAltIcon color={liked ? "primary" : "inherit"} />
           </IconButton>
         </Badge>
@@ -210,7 +298,11 @@ export default function Topic({ topicData }) {
           }}
           badgeContent={deslikes.toString()}
         >
-          <IconButton aria-label="deslike" disabled={disable} onClick={evt => {handleLikeTopic(evt)}} >
+          <IconButton
+            aria-label="deslike"
+            disabled={disable}
+            onClick={toggleDeslikeTopic}
+          >
             <ThumbDownIcon color={desliked ? "primary" : "inherit"} />
           </IconButton>
         </Badge>
