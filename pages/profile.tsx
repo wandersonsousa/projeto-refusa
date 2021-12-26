@@ -30,7 +30,6 @@ const Profile = () => {
   const theme = useTheme();
   const classes = useStyles(theme);
   const { user } = useAuth();
-  console.log("user from profile", user);
   return (
     <div className={classes.root}>
       <RefusaAppBar user={user} />

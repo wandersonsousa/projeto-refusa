@@ -92,17 +92,6 @@ export default function NewTopicForm({ user, setIsLoading }) {
               ),
               { count: 0 }
             );
-            await setDoc(
-              doc(
-                collection(
-                  doc(collection(firebase_helper.db, "topics"), snap.id),
-                  "comments"
-                ),
-                "total"
-              ),
-              { count: 0 }
-            );
-
             setImage(null);
             setDisabled(false);
             setIsLoading(false);

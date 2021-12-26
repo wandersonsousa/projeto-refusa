@@ -12,7 +12,8 @@ import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import AddIcon from "@material-ui/icons/Add";
 import Router from "next/router";
 import { Avatar } from "@material-ui/core";
-
+import VpnKeyIcon from "@material-ui/icons/VpnKey";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 const useStyles = makeStyles({
   list: {
     width: 250,
@@ -64,14 +65,30 @@ export default function RightDrawer({ user }) {
           <ListItemText primary={"Perfil"} />
         </ListItem>
 
-        <ListItem button key={1} onClick={() => Router.push("/profile")}>
+        <ListItem button key={1} onClick={() => Router.push("/login")}>
+          <ListItemIcon>
+            <VpnKeyIcon />
+          </ListItemIcon>
+          <ListItemText primary={"Login"} />
+        </ListItem>
+
+        <ListItem button key={1} onClick={() => Router.push("/logoff")}>
+          <ListItemIcon>
+            <ExitToAppIcon />
+          </ListItemIcon>
+          <ListItemText primary={"Logoff"} />
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
+        <ListItem button key={1} onClick={() => Router.push("/new_topic")}>
           <ListItemIcon>
             <AddIcon />
           </ListItemIcon>
           <ListItemText primary={"Criar tópico"} />
         </ListItem>
       </List>
-      <Divider />
+
       {/*   <List>
         {["All mail", "Trash", "Spam"].map((text, index) => (
           <ListItem button key={text}>

@@ -50,7 +50,6 @@ const Home = () => {
       setTopics(topicsData);
     })();
   }, []);
-  console.log(topics);
   return (
     <div className={classes.root}>
       <RefusaAppBar user={user} />

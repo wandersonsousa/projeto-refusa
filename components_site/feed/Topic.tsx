@@ -15,7 +15,14 @@ import Typography from "@material-ui/core/Typography";
 import CommentIcon from "@material-ui/icons/Comment";
 import ThumbDownIcon from "@material-ui/icons/ThumbDown";
 import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
-import { collection, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../lib/auth";
 import firebase_helper from "../../lib/firebase_helper";
@@ -46,6 +53,8 @@ export default function Topic({ topicData }) {
   const [deslikes, setDeslikes] = useState(0);
   const [liked, setLiked] = useState(false);
   const [desliked, setDisliked] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [comment, setComment] = useState("");
   const [disable, setdisable] = useState(false);
   const classes = useStyles({ positive: likes >= deslikes });
 
@@ -53,6 +62,22 @@ export default function Topic({ topicData }) {
     setExpanded(!expanded);
   };
   const { user } = useAuth();
+
+  // get total like count
+  useEffect(() => {
+    getDocs(
+      collection(
+        doc(collection(firebase_helper.db, "topics"), topicData.id),
+        "comments"
+      )
+    ).then((snaphots) => {
+      const commentsData = [];
+      snaphots.forEach((commentSnap) => {
+        commentsData.push(commentSnap.data());
+      });
+      setComments(commentsData);
+    });
+  }, []);
 
   // get total like count
   useEffect(() => {
@@ -67,7 +92,6 @@ export default function Topic({ topicData }) {
     ).then((snap) => {
       if (snap.exists()) setLikes(snap.data().count);
       else setLikes(0);
-      console.log(snap.data());
     });
   }, []);
 
@@ -252,6 +276,29 @@ export default function Topic({ topicData }) {
     }
   };
 
+  const addComment = async () => {
+    if (comment.length > 0) {
+      setdisable(true);
+      setDoc(
+        doc(
+          collection(
+            doc(collection(firebase_helper.db, "topics"), topicData.id),
+            "comments"
+          ),
+          user.displayName
+        ),
+        {
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          comment: comment,
+        }
+      ).then(() => {
+        setdisable(false);
+        setComment("");
+      });
+    }
+  };
+
   return (
     <Card className={classes.root}>
       <CardActionArea>
@@ -320,16 +367,18 @@ export default function Topic({ topicData }) {
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           <Input
+            onChange={(e) => setComment(e.target.value)}
+            value={comment}
             fullWidth
             endAdornment={
-              <InputAdornment position="end">
+              <InputAdornment position="end" onClick={addComment}>
                 <IconButton aria-label="toggle password visibility">
                   <CommentIcon />
                 </IconButton>
               </InputAdornment>
             }
           />
-          <CommentList />
+          <CommentList comments={comments} />
         </CardContent>
       </Collapse>
     </Card>
