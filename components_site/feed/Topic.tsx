@@ -1,0 +1,243 @@
+import {
+  Badge,
+  Collapse,
+  IconButton,
+  Input,
+  InputAdornment
+} from "@material-ui/core";
+import Card from "@material-ui/core/Card";
+import CardActionArea from "@material-ui/core/CardActionArea";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import CardMedia from "@material-ui/core/CardMedia";
+import { createStyles, makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+import CommentIcon from "@material-ui/icons/Comment";
+import ThumbDownIcon from "@material-ui/icons/ThumbDown";
+import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
+import { collection, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../../lib/auth";
+import firebase_helper from "../../lib/firebase_helper";
+import CommentList from "./CommentList";
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      margin: "2rem auto",
+      minWidth: 500,
+      maxWidth: 500,
+      borderLeft: "4px solid #2ecc71",
+    },
+    media: {
+      backgroundPosition: "center",
+      backgroundSize: "contain",
+    },
+  })
+);
+
+// positive: #2ecc71
+// negative: #e74c3c
+
+export default function Topic({ topicData }) {
+  const classes = useStyles();
+  const [expanded, setExpanded] = useState(false);
+  const [likes, setLikes] = useState(0);
+  const [deslikes, setDeslikes] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const [desliked, setDisliked] = useState(false);
+  const [disable, setdisable] = useState(false);
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
+  const { user } = useAuth();
+
+  // get total like count
+  useEffect(() => {
+    getDoc(
+      doc(
+        collection(
+          doc(collection(firebase_helper.db, "topics"), topicData.id),
+          "likes"
+        ),
+        "total"
+      )
+    ).then((snap) => {
+      if (snap.exists()) setLikes(snap.data().count || 0);
+    });
+  }, []);
+
+  // get total deslikes count
+  useEffect(() => {
+    getDoc(
+      doc(
+        collection(
+          doc(collection(firebase_helper.db, "topics"), topicData.id),
+          "deslikes"
+        ),
+        "total"
+      )
+    ).then((snap) => {
+      if (snap.exists()) setDeslikes(snap.data().count || 0);
+    });
+  }, []);
+
+  // check if user liked this post already
+  useEffect(() => {
+    setdisable(true);
+    getDoc(
+      doc(
+        collection(
+          doc(collection(firebase_helper.db, "topics"), topicData.id),
+          "likes"
+        ),
+        user.displayName
+      )
+    ).then((snap) => {
+      if (snap.exists()) {
+        setLiked(true);
+        setdisable(false);
+      } else {
+        setLiked(false);
+        setdisable(false);
+      }
+    });
+  }, [liked]);
+
+  // check if user desliked this post already
+  useEffect(() => {
+    setdisable(true);
+    getDoc(
+      doc(
+        collection(
+          doc(collection(firebase_helper.db, "topics"), topicData.id),
+          "deslikes"
+        ),
+        user.displayName
+      )
+    ).then((snap) => {
+      if (snap.exists()) {
+        setDisliked(true);
+        setdisable(false);
+      } else {
+        setDisliked(false);
+        setdisable(false);
+      }
+    });
+  }, [liked]);
+
+  const handleLikeTopic = async (evt) => {
+    evt.preventDefault();
+    if (liked) {
+      // remove like
+      setdisable(true);
+      await deleteDoc(
+          doc(
+            collection(
+              doc(collection(firebase_helper.db, "topics"), topicData.id),
+              "likes"
+            ),
+            user.displayName
+          )
+        ).then(()=>{
+          setLikes(likes - 1);
+          setLiked(false);
+          setdisable(false)
+        });
+    } else {
+      //add like
+      setdisable(true);
+      await setDoc(
+        doc(
+          collection(
+            doc(collection(firebase_helper.db, "topics"), topicData.id),
+            "likes"
+          ),
+          user.displayName
+        ),
+        {
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+        }
+      ).then(()=>{
+        setdisable(false);
+        setLiked(true);
+        setLikes(likes + 1);
+      });
+    }
+
+  return (
+    <Card className={classes.root}>
+      <CardActionArea>
+        <CardMedia
+          component="img"
+          alt="Contemplative Reptile"
+          height="300"
+          image={topicData.imageUrl}
+          title="Contemplative Reptile"
+          classes={{
+            media: classes.media,
+          }}
+        />
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="h2">
+            {topicData.title}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            {topicData.content}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+
+      <CardActions style={{ justifyContent: "center" }}>
+        <Badge
+          overlap="circular"
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          badgeContent={likes.toString()}
+        >
+          <IconButton aria-label="like" disabled={disable}>
+            <ThumbUpAltIcon color={liked ? "primary" : "inherit"} />
+          </IconButton>
+        </Badge>
+        <Badge
+          overlap="circular"
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          badgeContent={deslikes.toString()}
+        >
+          <IconButton aria-label="deslike" disabled={disable} onClick={evt => {handleLikeTopic(evt)}} >
+            <ThumbDownIcon color={desliked ? "primary" : "inherit"} />
+          </IconButton>
+        </Badge>
+        <IconButton aria-label="comment">
+          <CommentIcon
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+          />
+        </IconButton>
+      </CardActions>
+
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>
+          <Input
+            fullWidth
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton aria-label="toggle password visibility">
+                  <CommentIcon />
+                </IconButton>
+              </InputAdornment>
+            }
+          />
+          <CommentList />
+        </CardContent>
+      </Collapse>
+    </Card>
+  );
+}
