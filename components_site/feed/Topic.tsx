@@ -27,7 +27,8 @@ const useStyles = makeStyles(() =>
       margin: "2rem auto",
       minWidth: 500,
       maxWidth: 500,
-      borderLeft: "4px solid #2ecc71",
+      borderLeft: (props) =>
+        props.positive ? "4px solid #2ecc71" : "4px solid #e74c3c",
     },
     media: {
       backgroundPosition: "center",
@@ -40,13 +41,14 @@ const useStyles = makeStyles(() =>
 // negative: #e74c3c
 
 export default function Topic({ topicData }) {
-  const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
   const [likes, setLikes] = useState(0);
   const [deslikes, setDeslikes] = useState(0);
   const [liked, setLiked] = useState(false);
   const [desliked, setDisliked] = useState(false);
   const [disable, setdisable] = useState(false);
+  const classes = useStyles({ positive: likes >= deslikes });
+
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
