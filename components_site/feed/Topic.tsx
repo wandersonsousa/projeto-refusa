@@ -34,8 +34,6 @@ const useStyles = makeStyles(() =>
       margin: "2rem auto",
       minWidth: 500,
       maxWidth: 500,
-      borderLeft: (props) =>
-        props.positive ? "4px solid #2ecc71" : "4px solid #e74c3c",
     },
     media: {
       backgroundPosition: "center",
@@ -56,7 +54,8 @@ export default function Topic({ topicData }) {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
   const [disable, setdisable] = useState(false);
-  const classes = useStyles({ positive: likes >= deslikes });
+  const positiveTopic = likes >= deslikes;
+  const classes = useStyles();
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -300,7 +299,12 @@ export default function Topic({ topicData }) {
   };
 
   return (
-    <Card className={classes.root}>
+    <Card
+      className={classes.root}
+      style={{
+        borderLeft: positiveTopic ? "4px solid #2ecc71" : "4px solid #e74c3c",
+      }}
+    >
       <CardActionArea>
         <CardMedia
           component="img"
