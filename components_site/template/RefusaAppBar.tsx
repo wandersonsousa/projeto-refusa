@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function RefusaAppBar({ user }) {
+export default function RefusaAppBar({ user, logout }) {
   const theme = useTheme();
   // const loggedIn = true;
   const classes = useStyles(theme);
@@ -48,7 +48,7 @@ export default function RefusaAppBar({ user }) {
 
         {user ? (
           <>
-            <RightDrawer user={user} />
+            <RightDrawer user={user} logout={logout} />
           </>
         ) : (
           <Button onClick={() => Router.push("/login")} variant="contained">

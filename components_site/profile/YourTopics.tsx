@@ -6,6 +6,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import ArtTrackIcon from "@material-ui/icons/ArtTrack";
+import Topic from "../feed/Topic";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -16,35 +17,18 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function YourTopics() {
+export default function YourTopics({ topics = [] }) {
   const classes = useStyles();
-
   return (
     <List className={classes.root}>
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <ArtTrackIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="como fazer caramelo" secondary="Jan 9, 2014" />
-      </ListItem>
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <ArtTrackIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Como faz isso mano" secondary="Jan 7, 2014" />
-      </ListItem>
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <ArtTrackIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Eu não sei bro" secondary="July 20, 2014" />
-      </ListItem>
+      {topics.map((topic, index) => (
+        <ListItem key={index}>
+          <ListItemAvatar>
+            <Avatar src={topic.imageUrl}></Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={topic.title} />
+        </ListItem>
+      ))}
     </List>
   );
 }

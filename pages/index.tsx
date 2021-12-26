@@ -31,9 +31,9 @@ const useStyles = makeStyles((theme: Theme) =>
 const Home = () => {
   const theme = useTheme();
   const classes = useStyles(theme);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [topics, setTopics] = useState([]);
-
+  
   const half = Math.ceil(topics.length / 2);
   const firstHalf = topics.slice(0, half);
   const secondHalf = topics.slice(-half);
@@ -52,7 +52,7 @@ const Home = () => {
   }, []);
   return (
     <div className={classes.root}>
-      <RefusaAppBar user={user} />
+      <RefusaAppBar user={user} logout={logout} />
       <Paper
         style={{
           display: "flex",

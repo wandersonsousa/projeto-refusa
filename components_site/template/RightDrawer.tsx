@@ -25,7 +25,7 @@ const useStyles = makeStyles({
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
-export default function RightDrawer({ user }) {
+export default function RightDrawer({ user, logout }) {
   const classes = useStyles();
   const [state, setState] = React.useState({
     top: false,
@@ -65,14 +65,7 @@ export default function RightDrawer({ user }) {
           <ListItemText primary={"Perfil"} />
         </ListItem>
 
-        <ListItem button key={1} onClick={() => Router.push("/login")}>
-          <ListItemIcon>
-            <VpnKeyIcon />
-          </ListItemIcon>
-          <ListItemText primary={"Login"} />
-        </ListItem>
-
-        <ListItem button key={1} onClick={() => Router.push("/logoff")}>
+        <ListItem button key={1} onClick={() => logout()}>
           <ListItemIcon>
             <ExitToAppIcon />
           </ListItemIcon>
