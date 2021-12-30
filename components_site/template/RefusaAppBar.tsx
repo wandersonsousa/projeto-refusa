@@ -48,6 +48,7 @@ export default function RefusaAppBar({ user, logout }) {
 
         {user ? (
           <>
+            <div style={{ padding: 8 }}>{user.displayName}</div>{" "}
             <RightDrawer user={user} logout={logout} />
           </>
         ) : (
