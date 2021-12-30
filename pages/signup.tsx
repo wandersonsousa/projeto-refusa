@@ -15,7 +15,7 @@ import {
 } from "@material-ui/core";
 import { useAuth } from "../lib/auth";
 import { useRouter } from "next/router";
-import firebase_helper from "../lib/firebase";
+import firebase_helper from "../lib/firebase_helper";
 import { collection, doc, getDoc } from "firebase/firestore";
 import { Alert } from "@material-ui/lab";
 
