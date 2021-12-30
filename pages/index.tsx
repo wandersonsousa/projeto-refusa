@@ -33,10 +33,21 @@ const Home = () => {
   const classes = useStyles(theme);
   const { user, logout } = useAuth();
   const [topics, setTopics] = useState([]);
-  
-  const half = Math.ceil(topics.length / 2);
-  const firstHalf = topics.slice(0, half);
-  const secondHalf = topics.slice(-half);
+
+  let half = 0;
+  let firstHalf = [];
+  let secondHalf = [];
+
+  if (topics.length > 1) {
+    half = Math.ceil(topics.length / 2);
+    firstHalf = topics.slice(0, half);
+    secondHalf = topics.slice(-half);
+  } else if (topics.length == 1) {
+    firstHalf = [topics[0]];
+    secondHalf = [];
+  } else {
+    firstHalf = secondHalf = [];
+  }
 
   useEffect(() => {
     (async () => {

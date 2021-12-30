@@ -101,7 +101,11 @@ const Profile = () => {
           <Grid item container sm={12} md={6} justify="space-around">
             <Grid item style={{ marginBottom: "1rem" }}>
               <Typography variant="h6">Tópicos Criados</Typography>
-              <YourTopics topics={yourTopics} />
+              {yourTopics.length > 0 ? (
+                <YourTopics topics={yourTopics} />
+              ) : (
+                "Sem tópicos criados"
+              )}
             </Grid>
           </Grid>
         </Grid>
