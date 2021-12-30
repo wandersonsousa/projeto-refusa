@@ -62,7 +62,7 @@ export default function Topic({ topicData }) {
   };
   const { user } = useAuth();
 
-  // get total like count
+  // get comments
   useEffect(() => {
     getDocs(
       collection(
@@ -294,6 +294,19 @@ export default function Topic({ topicData }) {
       ).then(() => {
         setdisable(false);
         setComment("");
+
+        getDocs(
+          collection(
+            doc(collection(firebase_helper.db, "topics"), topicData.id),
+            "comments"
+          )
+        ).then((snaphots) => {
+          const commentsData = [];
+          snaphots.forEach((commentSnap) => {
+            commentsData.push(commentSnap.data());
+          });
+          setComments(commentsData);
+        });
       });
     }
   };

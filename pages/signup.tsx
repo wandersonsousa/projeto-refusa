@@ -35,18 +35,13 @@ export default function SignInSide() {
   const router = useRouter();
 
   const mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  const usernameformat = /^(?=[a-zA-Z0-9._]{4,12}$)(?!.*[_.]{2})[^_.].*[^_.]$/;
 
   const registeruser = async (e) => {
     e.preventDefault();
     setdisable(true);
 
     if (email != null && password != null && username != null) {
-      if (
-        email.match(mailformat) &&
-        password.length >= 6 &&
-        username.match(usernameformat)
-      ) {
+      if (email.match(mailformat) && password.length >= 6) {
         setregistershowerror(null);
 
         const docRef = doc(firebase_helper.db, "users", username);
@@ -60,11 +55,11 @@ export default function SignInSide() {
         setdisable(false);
       } else {
         setdisable(false);
-        setregistershowerror("Senha deve ter no mínimo 6 caracteres");
+        setregistershowerror("Validação falhou");
       }
     } else {
       setdisable(false);
-      setregistershowerror("Senha deve ter no mínimo 6 caracteres");
+      setregistershowerror("Validaçao falhou");
     }
   };
 
