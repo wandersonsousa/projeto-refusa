@@ -24,6 +24,7 @@ function useFirebaseAuth() {
       } else {
         setUser(null);
         setLoading(false);
+        Router.push("/login");
       }
     });
     return () => {
@@ -82,9 +83,7 @@ function useFirebaseAuth() {
 
 export function AuthProvider({ children }) {
   const authuser = useFirebaseAuth();
-  if (!authuser) {
-    Router.push("/login");
-  }
+
   return (
     <authContext.Provider value={authuser}>{children}</authContext.Provider>
   );
