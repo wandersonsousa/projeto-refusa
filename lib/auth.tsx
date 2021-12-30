@@ -24,7 +24,7 @@ function useFirebaseAuth() {
       } else {
         setUser(null);
         setLoading(false);
-        Router.push("/login");
+        if (Router.pathname !== "/signup") Router.push("/login");
       }
     });
     return () => {
