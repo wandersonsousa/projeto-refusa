@@ -318,6 +318,12 @@ export default function Topic({ topicData }) {
         borderLeft: positiveTopic ? "4px solid #2ecc71" : "4px solid #e74c3c",
       }}
     >
+      {" "}
+      <CardContent>
+        <Typography gutterBottom variant="caption">
+          Autor: {topicData.username}
+        </Typography>
+      </CardContent>
       <CardActionArea>
         <CardMedia
           component="img"
@@ -338,7 +344,6 @@ export default function Topic({ topicData }) {
           </Typography>
         </CardContent>
       </CardActionArea>
-
       <CardActions style={{ justifyContent: "center" }}>
         <Badge
           overlap="circular"
@@ -380,7 +385,6 @@ export default function Topic({ topicData }) {
           />
         </IconButton>
       </CardActions>
-
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           <Input
